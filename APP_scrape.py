@@ -1,10 +1,10 @@
-from bs4 import BeautifulSoup, SoupStrainer
+from bs4 import BeautifulSoup
 import urllib.request
 import json
 import os
 
 
-def get_docs(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
+def APP_scrape(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 			 keywords=&field-keywords2=&field-keywords3=&from%5Bdate%5D=&to%5Bd\
 			 ate%5D=&person2=&category2%5B%5D=&items_per_page=100", president=
 			 "trump", max_page_count = 100):
