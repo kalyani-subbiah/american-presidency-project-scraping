@@ -1,29 +1,33 @@
-from bs4 import BeautifulSoup
 import urllib.request
 import json
 import os
+from bs4 import BeautifulSoup, SoupStrainer
+from jsonmerge import merge
 
 
-def APP_scrape(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
+def get_docs(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 			 keywords=&field-keywords2=&field-keywords3=&from%5Bdate%5D=&to%5Bd\
 			 ate%5D=&person2=&category2%5B%5D=&items_per_page=100", president=
-			 "trump", max_page_count = 100):
+			 "trump", outfile_name = "docs.json", max_page_count = 100):
 	"""
 	Function to scrape documents from American Presidency Project. The function
 	scrapes documents from table in search page. 
 	Function stores documents in json files at 100 documents per json file.
+	The jsons are combined into one master json.
 	Function reports progress by printing page count and document count.
 	Sound alarm is commented and can be enabled.
 
+
 	Args:
-        url (string) = url of search page. Documents from table in search page 
-        			   will be scraped.
-        president (string): president's name for naming outfile
-        max_page_count (int): maximum number of pages in table to be scraped
-        					  (default: 100)
-       
-    Returns:
-        None
+		url (string) = url of search page. Documents from table in search page 
+					   will be scraped.
+		president (string): president's name for naming outfile
+		outfile (string): file path of output document in JSON format
+		max_page_count (int): maximum number of pages in table to be scraped
+							  (default: 100)
+	   
+	Returns:
+		None
 	"""
 	# stores number of pages scraped
 	page_count = 0
@@ -65,19 +69,19 @@ def APP_scrape(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 						link["president"] = p.text
 					#store title of document
 					title = soup_1.findAll('div',attrs={'class':"field-ds-doc-t\
-													    itle"})
+														itle"})
 					for t in title:
 						link["title"] = t.text
 					#store categories of document
 					category = soup_1.findAll('a',attrs={'property':"rdfs:label \
-											              skos:prefLabel"})				
+														  skos:prefLabel"})				
 					if len(category) > 0:
 						link['category'] = []
 						for x in category:
 							link['category'].append(x.text)
 					#store text of document
 					text1 = soup_1.findAll('div',attrs={'class':"field-docs-con\
-													    tent"})
+														tent"})
 					for t in text1:
 						link["text"] = t.text	
 					if link:
@@ -85,18 +89,34 @@ def APP_scrape(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 						print("DOC COUNT: ", c)
 					#store document to master dict
 					documents[c] = link
-	#created outfile with specified president's name
-	filename = president + str(page_count) + ".json"
-	with open(filename, 'w') as fp:
-		#dump json in dictionary
-		json.dump(documents, fp)
+		#created outfile with specified president's name
+		filename = president + str(page_count) + ".json"
+		with open(filename, 'w') as fp:
+			#dump json in dictionary
+			json.dump(documents, fp)
+			#os.system('say "your program has finished"')
+
+		page_count += 1
+
+	#combine the 100-doc json files into one list
+	result = []
+	file0 = president + "0.json"
+	#merge files using jsonmerge
+	with open(file0) as f:
+		data0 = json.loads(f.read())
+	for c in range(0, max_page_count):
+		filen = president + str(c) + ".json"
+		with open(filen) as f:
+			datan = json.loads(f.read())
+		result = merge(result, datan)	
+	#dump list in a json file
+	with open(outfile_name, "w") as outfile: 
+		json.dump(result, outfile)
+
+	#os.system('say "your program has finished"')
+	#os.system('say "your program has finished"')
 	#os.system('say "your program has finished"')
 
-	page_count += 1
-
-#os.system('say "your program has finished"')
-#os.system('say "your program has finished"')
-#os.system('say "your program has finished"')
 
 
 
