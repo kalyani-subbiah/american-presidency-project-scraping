@@ -1,9 +1,6 @@
 # American Presidency Project - Web scraping
 
-Function for scraping American presidency project files for the different presidents.
+Scraping the American Presidency Project Website for presidential speeches and documents.
 
-Args:
+Description: "The American Presidency Project, non-profit and non-partisan, is the leading source of presidential documents on the internet.  Our rapidly-growing collection is hosted at the University of California, Santa Barbara."
 
-
-## Urls:
-1) 
