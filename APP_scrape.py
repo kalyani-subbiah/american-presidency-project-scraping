@@ -7,7 +7,7 @@ from jsonmerge import merge
 
 def get_docs(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 			 keywords=&field-keywords2=&field-keywords3=&from%5Bdate%5D=&to%5Bd\
-			 ate%5D=&person2=&category2%5B%5D=&items_per_page=100", president=
+			 ate%5D=&person2=&category2%5B%5D=&items_per_page=100", name=
 			 "trump", outfile_name = "docs.json", max_page_count = 100):
 	"""
 	Function to scrape documents from American Presidency Project. The function
@@ -21,7 +21,7 @@ def get_docs(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 	Args:
 		url (string) = url of search page. Documents from table in search page 
 					   will be scraped.
-		president (string): president's name for naming outfile
+		name (string): name for outfiles
 		outfile (string): file path of output document in JSON format
 		max_page_count (int): maximum number of pages in table to be scraped
 							  (default: 100)
@@ -90,7 +90,7 @@ def get_docs(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 					#Store document to master dict
 					documents[c] = link
 		#Created outfile with specified president's name
-		filename = president + str(page_count) + ".json"
+		filename = name + str(page_count) + ".json"
 		with open(filename, 'w') as fp:
 			#Dump json in dictionary
 			json.dump(documents, fp)
@@ -99,13 +99,13 @@ def get_docs(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 		page_count += 1
 
 	
-	file0 = president + "0.json"
+	file0 = name + "0.json"
 	#Merge files using jsonmerge
 	with open(file0) as f:
 		data0 = json.loads(f.read())
 	result = data0
 	for c in range(1, max_page_count):
-		filen = president + str(c) + ".json"
+		filen = name + str(c) + ".json"
 		with open(filen) as f:
 			datan = json.loads(f.read())
 		result = merge(result, datan)	
