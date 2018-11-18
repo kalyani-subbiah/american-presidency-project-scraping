@@ -98,13 +98,13 @@ def get_docs(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 
 		page_count += 1
 
-	#Combine the 100-doc json files into one list
-	result = []
+	
 	file0 = president + "0.json"
 	#Merge files using jsonmerge
 	with open(file0) as f:
 		data0 = json.loads(f.read())
-	for c in range(0, max_page_count):
+	result = data0
+	for c in range(1, max_page_count):
 		filen = president + str(c) + ".json"
 		with open(filen) as f:
 			datan = json.loads(f.read())
