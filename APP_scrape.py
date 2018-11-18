@@ -29,57 +29,57 @@ def get_docs(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 	Returns:
 		None
 	"""
-	# stores number of pages scraped
+	#Stores number of pages scraped
 	page_count = 0
 
-	#stores number of documents scraped
+	#Stores number of documents scraped
 	c = 0
 
 	while page_count < max_page_count:
 
-		#dict to store documents in a page
+		#Dict to store documents in a page
 		documents = {}
 		print("\n \n ---------------PAGE COUNT: ", page_count)
-		#url of search page
+		#Url of search page
 		url = url + "&page=" + str(page_count)
 		html_page = urllib.request.urlopen(url)
 		soup = BeautifulSoup(html_page, "lxml")
-		#find links in table
+		#Find links in table
 		data = soup.findAll('div',attrs={'class':"view-content"})
 		for div in data:
 			links = div.findAll('a')
 			for a in links:	
-				#not considering links to the president's page, only links to 
+				#Not considering links to the president's page, only links to 
 				#documents		
 				if '/people/president' != str(a['href'])[:17]:
-					#dictionary to store details of documents
+					#Dictionary to store details of documents
 					link = {}
-					#url of document
+					#Url of document
 					url_1 = "https://www.presidency.ucsb.edu" + a['href']
 					html_1 = urllib.request.urlopen(url_1)
 					soup_1 = BeautifulSoup(html_1, "lxml")	
-					#store date	
+					#Store date	
 					date = soup_1.findAll('span',attrs={'class':"date-display-s\
 														ingle"})
 					for d in date:
 						link['date'] = d.text
-					#store president's name
+					#Store president's name
 					person = soup_1.findAll('div',attrs={'class':"field-title"})
 					for p in person:
 						link["president"] = p.text
-					#store title of document
+					#Store title of document
 					title = soup_1.findAll('div',attrs={'class':"field-ds-doc-t\
 														itle"})
 					for t in title:
 						link["title"] = t.text
-					#store categories of document
+					#Store categories of document
 					category = soup_1.findAll('a',attrs={'property':"rdfs:label \
 														  skos:prefLabel"})				
 					if len(category) > 0:
 						link['category'] = []
 						for x in category:
 							link['category'].append(x.text)
-					#store text of document
+					#Store text of document
 					text1 = soup_1.findAll('div',attrs={'class':"field-docs-con\
 														tent"})
 					for t in text1:
@@ -87,21 +87,21 @@ def get_docs(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 					if link:
 						c += 1
 						print("DOC COUNT: ", c)
-					#store document to master dict
+					#Store document to master dict
 					documents[c] = link
-		#created outfile with specified president's name
+		#Created outfile with specified president's name
 		filename = president + str(page_count) + ".json"
 		with open(filename, 'w') as fp:
-			#dump json in dictionary
+			#Dump json in dictionary
 			json.dump(documents, fp)
 			#os.system('say "your program has finished"')
 
 		page_count += 1
 
-	#combine the 100-doc json files into one list
+	#Combine the 100-doc json files into one list
 	result = []
 	file0 = president + "0.json"
-	#merge files using jsonmerge
+	#Merge files using jsonmerge
 	with open(file0) as f:
 		data0 = json.loads(f.read())
 	for c in range(0, max_page_count):
@@ -109,7 +109,7 @@ def get_docs(url = "https://www.presidency.ucsb.edu/advanced-search?field-\
 		with open(filen) as f:
 			datan = json.loads(f.read())
 		result = merge(result, datan)	
-	#dump list in a json file
+	#Dump list in a json file
 	with open(outfile_name, "w") as outfile: 
 		json.dump(result, outfile)
 
